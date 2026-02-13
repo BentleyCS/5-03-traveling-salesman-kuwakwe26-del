@@ -8,16 +8,29 @@ def getPathDistance(places : list):
     #Given a list of x,y coordinates return the distance it would take to go to each coordinate
     # in order and then back to the start.
     dist = 0
+    for i in range(0,len(places)):
+        if i == len(places)-1:
+            dist += getDistance(places[0],places[-1])
+        else:
+            dist += getDistance(places[i], places[i + 1])
+
     return dist
 
 
 def full_TSP(places : list):
     #Check the distance of all possible different paths one could take over a set of x,y coordiantes
-    #and return the path with the shotest distance
+    #and return the path with the shootest distance
     #Print out the number of distance calculations you had to do.
 
     bestRoute = []
     calculations = 0
+    perms = generatePermutations(places)
+    small = 0
+    for i in range(0, len(perms)):
+        calculations += 1
+        if getPathDistance(perms[small]) > getPathDistance(perms[i]):
+            small = i
+    bestRoute = perms[small]
 
     print(f"there were {calculations} calculations for full TSP")
     return bestRoute
@@ -26,14 +39,25 @@ def hueristic_TSP(places : list):
     #Perform a hueristic calculation for traveling salesman.
     #For each node find the closest node to it and assume it is next node then repeat until you have your path.
     #Return the path. andprint out the number of distance calculations you did.
-
-
     calculations = 0
-
+    path = [places[0]]
+    unvisited = places[1:]
+    dist = getDistance(path[-1], unvisited[0])
+    while len(unvisited) > 0:
+        for i in range(len(unvisited)):
+            calculations += 1
+            location = 0
+            newdist = getDistance(path[-1], unvisited[i])
+            if newdist < dist:
+                dist = newdist
+                location = i
+        value = unvisited[location]
+        path.append(value)
+        unvisited.pop(location)
     print(f"there were {calculations} calculations for hueristic TSP")
-    return []
+    return path
 
-def generatePermutations(places : list):
+def generatePermutations(places : list) ->list:
     # a function that given a list will return all possible permutations of the list.
     return list(itertools.permutations(places))
 
@@ -92,6 +116,7 @@ def DrawExample(places):
         pygame.display.flip()
     # Quit Pygame
 
+print(getPathDistance([[80,75],[100,520],[530,300],[280,200],[350,150],[700,120],[400,500]]))
 DrawExample(places)
 #DrawExample(generate_RandomCoordinates(5))# DO NOT run more than 9 or 10
 pygame.quit()
